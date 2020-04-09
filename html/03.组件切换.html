@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 1.导入Vue的包 -->
+    <script src="../lib/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <a href="" @click.prevent="comName='login'"> 登录 </a>
+        <a href="" @click.prevent="comName='register'"> 注册 </a>
+
+        <!--  通过 mode属性， 设置组件切换时候的 模式 -->
+        <transition mode="out-in">
+            <component :is="comName"></component>
+        </transition>
+    </div>
+    <script>
+        //注册 组件
+        Vue.component('login',{
+            template:'<h3> 登录组件</h3>'
+        });
+        var com = Vue.extend({
+            template:'<h3>注册组件</h3>'
+        });
+        Vue.component('register', com);
+
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                comName:'login'
+            },
+            methods:{}
+        })
+
+    </script>
+    <style>
+        .v-enter, .v-leave-to{
+            opacity: 0;
+            transform: translateX(150px);
+        }
+        .v-enter-active, .v-leave-active{
+            transition: all .8s ease;
+        }
+    </style>
+</body>
+</html>

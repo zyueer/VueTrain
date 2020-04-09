@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 1.导入Vue的包 -->
+    <script src="../lib/vue.js"></script>
+    <link rel="stylesheet" href="../lib/animate.css">
+</head>
+<body>
+<div id="app">
+    <div>
+        <button @click="show = !show">
+            Toggle
+        </button>
+        <!-- 需求： 点击按钮，让 H3 显示，再点击，让 H3 隐藏-->
+        <!-- 1.使用 transition 元素，把需要被动画 控制的元素， 包裹起来-->
+        <!-- transition 元素，是 Vue官方提供的 -->
+        <!--<transition name="fade">    &lt;!&ndash; name 用于自动生成 CSS 过渡类名 &ndash;&gt;
+            <h3 v-if="show">这是一个H3</h3>
+        </transition>-->
+    </div>
+    <!-- 使用第三方类 实现动画-->
+    <div>
+        <transition
+            enter-active-class="animated bounceIn"
+            leave-active-class="animated bounceOut"
+        ><!--:duration="{enter: 200, leave: 400}"-->
+            <h6 v-if="show">这是一个H6</h6>
+        </transition>
+    </div>
+    <!-- 使用 JS钩子函数 实现动画-->
+    <div>
+        <transition
+                @before-enter="beforeEnter"
+                @enter="enter"
+                @after-enter="afterEnter"
+        ><!--:duration="{enter: 200, leave: 400}"-->
+            <h6 v-if="show">这是一个H6</h6>
+        </transition>
+    </div>
+    <!-- 列表动画 -->
+    <!-- 给 transition 添加 appear 属性，实现页面刚展示出来时的效果 -->
+    <!-- 给 transition 设置tag属性值， 指定 渲染为指定的元素，默认为 span-->
+    <transition-group appear tag="ul" name="slide">
+        <li v-for="(item, i) in list" :key="item.id" @click="del(i)">
+            {{item.id}} ---- {{item.name}}
+        </li>
+    </transition-group>
+</div>
+
+<script>
+    // 当我们导入包之后，在浏览器的内存中，就多了一个 Vue 构造函数，注意： 我们new出来的这个 vm 对象就是MVVM中的 vm调度者。
+    var vm = new Vue({
+        el: '#app',     // 控制显示的区域
+        data:{      // MVVM中的 M,用来保存数据。
+            show: true,
+            list:[
+                {id: 1, name:'张三'},
+                {id: 2, name:'小红'},
+                {id: 3, name:'小明'},
+                {id: 4, name:'小新'}
+            ]
+        },
+        methods:{
+            //注意： 参数 DOM 元素
+            beforeEnter(el){
+                //beforeEnter 表示 动画入场之前， 即初始样式
+                el.style.transform = "translate(0,0)"
+            },
+            enter(el, done){
+                //这句话没有实际作用，但是不写没有动画效果。可以认为，el.offsetWidth会强制动画刷新
+                el.offsetWidth;
+                el.style.transform = "translate(150px, 450px)";
+                el.style.transition = "all 1s ease";
+                //调用 afterEnter函数
+                done()
+            },
+            afterEnter(el){
+                //动画完成之后，会调用 afterEnter
+                this.show = !this.show;
+            },
+            del(i){
+                this.list.splice(i,1);
+            }
+
+        }
+    })
+</script>
+<style>
+    /*
+        name，用于自动生成 CSS 过渡类名。 eg: fade
+    */
+    /*v-enter【这是一个时间点】 是进入之前，元素的起始状态，此时还没有开始进入*/
+    /*v-leave-to【这是一个时间点】 是动画离开之后， 离开的终止状态，此时，元素 动画已经结束了*/
+    .fade-enter, .fade-leave-to{
+        opacity: 0;
+        transform: translateX(150px);
+    }
+    /* v-enter-active 【入场动画的时间段】*/
+    /* v-leave-active 【离场动画的时间段】*/
+    .fade-enter-active, .fade-leave-active{
+        transition: all .8s ease;
+    }
+
+    /*  列表动画  */
+    .slide-enter, .slide-leave-to{
+        opacity: 0;
+        transform: translateY(150px);
+    }
+    .slide-enter-active, .slide-leave-active{
+        transition: all .8s ease;
+    }
+    /* v-move 和 v-leave-active 配合使用， 能够实现列表后续的元素，渐渐地飘上来的效果 */
+    .v-move{
+        transition: all .8s ease;
+    }
+    .slide-leave-active{
+        position: absolute;
+    }
+
+</style>
+</body>
+</html>

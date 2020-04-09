@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../lib/vue.js"></script>
+    <!-- 1. 安装 vue-router 路由模块 -->
+    <script src="../lib/vue-router.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 3种  -->
+        <!-- router-link  默认渲染为一个 a 标签-->
+<!--        <router-link to="/login" tag="span"> 登录 </router-link>-->
+        <!-- 如果 路由使用查询字符串， 给路由传递参数， 不需要修改  路由规则的path-->
+<!--        <router-link to="/login?id=10&name=zhang"> 登录 传递参数 </router-link>-->
+        <!-- 如果 路由使用查询字符串， 给路由传递参数， 不需要修改  路由规则的path-->
+        <router-link to="/login/12/yuan"> 登录 另一种传递参数 </router-link>
+        <!-- 结束  -->
+
+        <router-link to="/register"> 注册 </router-link>
+        <!-- 路由的出口----这是 vue-router 提供的元素， 仅作为占位符， 路由规则匹配到的组件，就会展示到这个 router-view 中-->
+        <transition mode="out-in">
+            <router-view></router-view>
+        </transition>
+    </div>
+
+    <script>
+        // 0. 如果使用模块化机制编程，导入Vue和VueRouter，要调用 Vue.use(VueRouter)
+        //2.定义路由组件  -----组件的模板 对象
+        var login = {
+            // template:'<h1>登录组件----{{$route.query.id}}----{{$route.query.name}}</h1>',
+            template:'<h1>登录组件----{{$route.params.id}}----{{$route.params.name}}</h1>',
+        };
+
+        var register = {
+            template:'<h1>注册组件</h1>'
+        };
+
+        //  创建一个路由对象，  当导入 vue-router包之后， 在windows全局对象中，看就有了一个路由的构造函数， 叫做VueRouter
+        var routerObj = new VueRouter({
+            //【路由匹配规则】
+            routes:[
+                //每一个路由匹配规则， 都是一个对象，有两个必须的属性：
+                // 1.path, 表示监听  路由链接 地址；
+                // 2.component 表示 对应的组件
+                //  注意：   component 的属性值 是一个 组件的模板对象，  不能是 组件的引用名称；
+                // {path:'/', redirect:'/login'},
+                // {path:'/login', component:login},
+                {path:'/login/:id/:name', component:login},
+                {path:'/register', component:register},
+            ],
+            linkActiveClass:'myactive'
+        })
+
+        //创建 Vue实例
+        var vm = new Vue({
+            el:'#app',
+            data:{},
+            router: routerObj,  //将路由对象，注册到vm实例上， 用来监听url地址的变化
+        })
+    </script>
+
+    <style>
+        .router-link-active,.myactive{
+            color: red;
+            font-weight: 800;
+            font-size: 80px;
+            background-color: green;
+        }
+    </style>
+</body>
+</html>
